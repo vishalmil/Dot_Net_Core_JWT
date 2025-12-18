@@ -1,0 +1,17 @@
+bin/
+obj/
+
+*.user
+*.suo
+*.vs/
+.vscode/
+
+appsetting.Development.json
+
+appsetting.json
+
+*.log
+
+*.db
+
+*.tmp
