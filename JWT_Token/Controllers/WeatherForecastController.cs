@@ -19,6 +19,8 @@ namespace JWT_Token.Controllers
         }
 
         [HttpGet(Name = "GetWeatherForecast")]
+        [EnableRateLimiting("fixed")]
+        [Authorize]
         public IEnumerable<WeatherForecast> Get()
         {
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
