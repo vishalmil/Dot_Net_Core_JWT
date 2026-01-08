@@ -46,19 +46,35 @@ builder.Services.AddCors(options =>
 //Rate Limiter
 builder.Services.AddRateLimiter(options =>
 {
-    options.RajectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 
     options.AddFixedWindowLimiter("fixed", limiterOptions =>
     {
         limiterOptions.PermitLimit = 10;
         limiterOptions.Window = TimeSpan.FromMinutes(1);
         limiterOptions.QueueLimit = 2;
-        limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirs;
+        limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirstt;
     });
 });
 
 
 var app = builder.Build();
+
+// Global Exception Handling
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/json";
+
+        await context.Response.WriteAsJsonAsync(new
+        {
+            StatusCode = 500,
+            Message = "An unexpected error occurred. Please try again later."
+        });
+    });
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -76,7 +92,7 @@ app.UseCors("ReactCorsPolicy");
 
 app.UseRateLimiter();
 
-app.Authentication();
+app.UseAuthentication();
 
 app.UseAuthorization();
 
